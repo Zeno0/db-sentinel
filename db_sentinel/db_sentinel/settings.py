@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -76,11 +77,11 @@ WSGI_APPLICATION = "db_sentinel.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "neondb",
-        "USER": "neondb_owner",
+        "NAME": os.getenv("neondb"),
+        "USER": os.getenv"(neondb_owner"),
         "PASSWORD": "npg_nUdBi1hq4sKj",
-        "HOST": "ep-orange-cherry-amuxkxjh-pooler.c-5.us-east-1.aws.neon.tech",
-        "PORT": "5432",
+        "HOST": os.getenv("ep-orange-cherry-amuxkxjh-pooler.c-5.us-east-1.aws.neon.tech"),
+        "PORT": os.getenv("5432"),
         "OPTIONS": {
             "sslmode": "require" 
         },
