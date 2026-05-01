@@ -19,9 +19,20 @@ def dashboard(request):
     slow_queries = QueryStat.objects.order_by('-mean_exec_time')[:10]
     frequent_queries = QueryStat.objects.order_by('-calls')[:10]
 
+        # Prepare data for charts
+    slow_labels = [q.query[:30] for q in slow_queries]
+    slow_values = [q.mean_exec_time for q in slow_queries]
+
+    freq_labels = [q.query[:30] for q in frequent_queries]
+    freq_values = [q.calls for q in frequent_queries]
+
     context = {
         'slow_queries': slow_queries,
-        'frequent_queries': frequent_queries
+        'frequent_queries': frequent_queries,
+        'slow_labels': slow_labels,
+        'slow_values': slow_values,
+        'freq_labels': freq_labels,
+        'freq_values': freq_values,
     }
 
     return render(request, 'monitor/dashboard.html', context)

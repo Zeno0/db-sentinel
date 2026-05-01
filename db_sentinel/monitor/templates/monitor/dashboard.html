@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <title>DB Sentinel Dashboard</title>
     <style>
         body { font-family: Arial; margin: 20px; }
@@ -41,6 +42,43 @@
     </tr>
     {% endfor %}
 </table>
+<h2>Slow Queries Chart</h2>
+<canvas id="slowChart"></canvas>
+
+<h2>Frequent Queries Chart</h2>
+<canvas id="freqChart"></canvas>
+
+<script>
+const slowLabels = {{ slow_labels|safe }};
+const slowData = {{ slow_values|safe }};
+
+const freqLabels = {{ freq_labels|safe }};
+const freqData = {{ freq_values|safe }};
+
+// Slow Query Chart
+new Chart(document.getElementById('slowChart'), {
+    type: 'bar',
+    data: {
+        labels: slowLabels,
+        datasets: [{
+            label: 'Mean Execution Time',
+            data: slowData
+        }]
+    }
+});
+
+// Frequent Query Chart
+new Chart(document.getElementById('freqChart'), {
+    type: 'bar',
+    data: {
+        labels: freqLabels,
+        datasets: [{
+            label: 'Query Calls',
+            data: freqData
+        }]
+    }
+});
+</script>
 
 </body>
 </html>
