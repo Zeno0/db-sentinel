@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DB Sentinel Dashboard</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        h2 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        th { background-color: #f4f4f4; }
+    </style>
+</head>
+<body>
+
+<h1>Database Monitoring Dashboard</h1>
+
+<h2>Top Slow Queries</h2>
+<table>
+    <tr>
+        <th>Query</th>
+        <th>Mean Exec Time</th>
+    </tr>
+    {% for q in slow_queries %}
+    <tr>
+        <td>{{ q.query|truncatechars:80 }}</td>
+        <td>{{ q.mean_exec_time }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+<h2>Most Frequent Queries</h2>
+<table>
+    <tr>
+        <th>Query</th>
+        <th>Calls</th>
+    </tr>
+    {% for q in frequent_queries %}
+    <tr>
+        <td>{{ q.query|truncatechars:80 }}</td>
+        <td>{{ q.calls }}</td>
+    </tr>
+    {% endfor %}
+</table>
+
+</body>
+</html>
