@@ -7,7 +7,7 @@ from .collector import collect_query_stats
 
 
 def slow_queries(request):
-    data = list(QueryStat.objects.filter(mean_exec_time__gt=100)
+    data = list(QueryStat.objects.filter(mean_exec_time__gt=0)
                 .values())
     return JsonResponse(data, safe=False)
 
