@@ -77,11 +77,11 @@ WSGI_APPLICATION = "db_sentinel.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": os.getenv("neondb"),
-        "USER": os.getenv("neondb_owner"),
-        "PASSWORD": "npg_nUdBi1hq4sKj",
-        "HOST": os.getenv("ep-orange-cherry-amuxkxjh-pooler.c-5.us-east-1.aws.neon.tech"),
-        "PORT": os.getenv("5432"),
+        "NAME": os.getenv("DB_NAME"),
+        "USER": os.getenv("D_USER"),
+        "PASSWORD": "DB_PASSWORD",
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
         "OPTIONS": {
             "sslmode": "require" 
         },
