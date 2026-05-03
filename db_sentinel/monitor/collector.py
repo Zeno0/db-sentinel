@@ -8,7 +8,7 @@ def analyze_query(query, mean_exec_time, calls):
          send_telegram_alert(
             f"🚨 Slow Query Detected!\n\nQuery: {query[:100]}\nTime: {mean_exec_time} ms"
         )
-    if calls > 500:
+    if calls > 1500:
         send_telegram_alert(
             f"🔥 High Frequency Query!\n\nQuery: {query[:100]}\nCalls: {calls}"
         )
