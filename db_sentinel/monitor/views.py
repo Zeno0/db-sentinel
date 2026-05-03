@@ -57,7 +57,9 @@ def dashboard(request):
         'slow_labels': slow_labels,
         'slow_values': slow_values,
         'freq_labels': freq_labels,
-        'freq_values': freq_values
+        'freq_values': freq_values,
+        'time_labels': time_labels,
+'       'time_values': time_values
     }
 
     return render(request, 'monitor/dashboard.html', context)
