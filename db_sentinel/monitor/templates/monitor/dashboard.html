@@ -53,6 +53,14 @@
 <h2>Execution Time Trend</h2>
 <canvas id="trendChart"></canvas>
 
+<form method="get">
+    <select name="range" onchange="this.form.submit()">
+        <option value="1h">Last 1 Hour</option>
+        <option value="24h">Last 24 Hours</option>
+        <option value="7d">Last 7 Days</option>
+    </select>
+</form>
+
 <script>
 const slowLabels = {{ slow_labels|safe }};
 const slowData = {{ slow_values|safe }};
@@ -63,6 +71,17 @@ const freqData = {{ freq_values|safe }};
 const timelabels = {{ time_labels|safe }};
 const timevalues = {{ time_values|safe }};
 
+
+new Chart(document.getElementById('trendChart'), {
+    type: 'line',
+    data: {
+        labels: timelabels,
+        datasets: [{
+            label: 'Execution Time',
+            data: timevalues
+        }]
+    }
+});
 
 // Slow Query Chart
 new Chart(document.getElementById('slowChart'), {
@@ -88,24 +107,6 @@ new Chart(document.getElementById('freqChart'), {
     }
 });
 
-<form method="get">
-    <select name="range" onchange="this.form.submit()">
-        <option value="1h">Last 1 Hour</option>
-        <option value="24h">Last 24 Hours</option>
-        <option value="7d">Last 7 Days</option>
-    </select>
-</form>
-
-new Chart(document.getElementById('trendChart'), {
-    type: 'line',
-    data: {
-        labels: timelabels,
-        datasets: [{
-            label: 'Execution Time',
-            data: timevalues
-        }]
-    }
-});
 
 </script>
 
