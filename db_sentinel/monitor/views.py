@@ -8,7 +8,7 @@ from django.utils.timezone import now, timedelta
 
 
 def slow_queries(request):
-    data = list(QueryStat.objects.filter(mean_exec_time__gt=0)
+    data = list(QueryStat.objects.filter(mean_exec_time__gt=20)
                 .values())
     return JsonResponse(data, safe=False)
 

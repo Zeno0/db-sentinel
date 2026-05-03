@@ -66,8 +66,8 @@ const slowData = {{ slow_values|safe }};
 const freqLabels = {{ freq_labels|safe }};
 const freqData = {{ freq_values|safe }};
 
-const time_labels = {{ time_labels|safe }};
-const time_values = {{ time_values|safe }};
+const timelabels = {{ time_labels|safe }};
+const timevalues = {{ time_values|safe }};
 
 
 // Slow Query Chart
@@ -97,10 +97,10 @@ new Chart(document.getElementById('freqChart'), {
 new Chart(document.getElementById('trendChart'), {
     type: 'line',
     data: {
-        labels: time_labels,
+        labels: timelabels,
         datasets: [{
             label: 'Execution Time',
-            data: time_values
+            data: timevalues
         }]
     }
 });
