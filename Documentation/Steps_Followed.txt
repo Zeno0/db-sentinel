@@ -1,0 +1,139 @@
+postgresql://neondb_owner:***p*a**or****@ep-orange-cherry-amuxkxjh.c-5.us-east-1.aws.neon.tech/neondb?sslmode=require
+
+1 sign up neon, create project, copy string, in SQL Editor run 
+		CREATE EXTENSION pg_stat_statements;
+	as it will help with getting stats of PostgreSQL 
+
+2 create codespace with the same project name as postgreSQL orject name in GitHub, install Django in codespace
+		pip3 install Django
+		django-admin --version
+		pip3 install django psycopg2-binary
+
+3 set up project
+		django-admin startproject db_sentinel
+		cd db_sentinel
+		python manage.py startapp monitor
+	-> project[OS] is root system handels settings,configs,urls while app(monitor)[Service] where actual logic lives
+	   since it is a database monitoring system we isolate logic inside monitor so apps are scalable, clean, modular
+4 Connect Django to PostgreSQL and update settings.py of DATABASE in Django project and migrate
+		pip install psycopg2-binary
+		python manage.py migrate
+	-> all information in database are extracted from connection string
+
+5 Create Query Collector (CORE ENGINE)
+		from django.db import models
+		class QueryStat(models.Model):
+    			query = models.TextField()
+   			calls = models.IntegerField()
+    			total_exec_time = models.FloatField()
+    			mean_exec_time = models.FloatField()
+    			created_at = models.DateTimeField(auto_now_add=True)
+	-> here is a fix for future error i.e 
+		RuntimeError: Model class monitor.models.QueryStat doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS.
+	-> FIX:: in settings.py at INSTALLED_APPS = [] append 'monitor'
+		python manage.py makemigrations
+		python manage.py migrate
+
+6 FETCH PostgreSQL stats Trigger Collector
+	-> create collector.py in monitor
+		python manage.py shell
+		from monitor.collector import collect_query_stats
+		collect_query_stats()
+	-> to check if it worked
+		from monitor.models import QueryStat
+		QueryStat.objects.all()
+
+7 create API 
+	-> views.py(CRITICAL MUST SEE FOR API UNDERSTADNING AND TO GET WHAT OUTPUT WILL  WE GET) and urls.py modified 
+
+8 now to render in codespace version
+		pip install gunicorn psycopg2-binary      # install dependencies
+		pip freeze > requirements.txt		  # to create requirements.txt
+		touch build.sh
+			#!/usr/bin/env bash
+			pip install -r requirements.txt
+			python manage.py migrate
+		chmod +x build.sh
+		ALLOWED_HOSTS = ['*']                     # update settings.py
+		git add .
+		git commit -m "ready for deployment"
+		git push
+
+	-> now create a web service in render configure some things like:
+		Build Command   ./build.sh
+		Root Directory  db_sentinel              # since i have nested directory in GitHub
+		Start Command   gunicorn db_sentinel.wsgi:application --chdir db_sentinel              #since i have nested directory in GitHub
+	-> now i must add environment variable in render of neon
+		DB_NAME = neondb
+		DB_USER = neondb_owner
+		DB_PASSWORD = (your password)
+		DB_HOST = your neon host
+		DB_PORT = 5432
+	-> since i am using environment variables must update settings.py in codespace and push again
+		import os
+		DATABASES = {
+    			'default': {
+        		'ENGINE': 'django.db.backends.postgresql',
+        		'NAME': os.getenv('DB_NAME'),
+        		'USER': os.getenv('DB_USER'),
+        		'PASSWORD': os.getenv('DB_PASSWORD'),
+        		'HOST': os.getenv('DB_HOST'),
+        		'PORT': os.getenv('DB_PORT'),
+        		'OPTIONS': {
+            			'sslmode': 'require',
+        		},
+    		    }
+		}
+
+PROBLEMS FACED :::::::::
+	-> typos in setting up environment variables
+	-> problems due to nested directory
+		Root Directory  db_sentinel              # since i have nested directory in GitHub
+		Start Command   gunicorn db_sentinel.wsgi:application --chdir db_sentinel              #since i have nested directory in GitHub
+	-> without building checking code in codespace by exporting
+		export DB_NAME=neondb   etc....
+	-> while testing output empty so changed filter in API so i could see the output
+
+9 now automation CI/CD of jobs, create management/commands/collect_stats.py in monitor
+  then add secrets in GitHub and create workflow .yml 
+	-> Workflow runs every 5 minutes:
+		- cron: "*/5 * * * *"
+	-> main command to run is
+		python manage.py collect_stats
+	-> “The data is stored in a Django model called QueryStat, which maps to the monitor_querystat table in PostgreSQL. The collector reads from 	pg_stat_statements and inserts processed data into this table.”
+	
+10 Dashboard and charts 
+	-> In views.py a dashboard function is created
+	-> template created to store html file at monitor/templates/monitor/dashboard.html
+	-> url added at monitor/urls.py
+
+11 Alerts on telegram
+	-> create file monitor/alerts.py
+	-> get bot from botfather telegram
+	-> https://api.telegram.org/bot<YOUR_TOKEN>/getUpdates to get chat id after user has started bot
+	-> add secrets in GitHub, Render
+	-> analyze_query function added in collector.py
+	-> call analyze_query function in collect_query_stats() at he end of for loop
+	
+PROBLEMS FACED :::::::::
+	-> Environment variable not added in workflow .yml file, so added variables
+	   changed requirements.txt so build failed updated it
+
+12  Simulating Traffic, Users, real time situations
+	-> Simulate Multiple Users (Traffic) - in repo root load_test.py created
+	-> it hits api calls via http request
+	   to data activity in database create mode UserActivity in models.py then
+		python manage.py makemigrations
+		python manage.py migrate
+	-> now generate activity command in management db_sentinel/monitor/management/commands/generate_activity.py
+	-> Add atomic lock in collector.py to ensure consistency when multiple collectors run
+	-> multi-user awareness by  updating QueryStat model to track per-user performance and enable isolation
+		user_id = models.IntegerField(null=True, blank=True)
+		QueryStat.objects.create(
+		.
+		user_id=random.randint(1, 50)
+		.
+		)
+	-> adding time based analysis by updating dashboard in views.py and updating html file in templates
+
+
