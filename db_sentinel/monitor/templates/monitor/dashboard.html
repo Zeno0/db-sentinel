@@ -15,14 +15,6 @@
 
 <h1>Database Monitoring Dashboard</h1>
 
-<form method="get">
-    <select name="range" onchange="this.form.submit()">
-        <option value="1h">Last 1 Hour</option>
-        <option value="24h">Last 24 Hours</option>
-        <option value="7d">Last 7 Days</option>
-    </select>
-</form>
-
 <h2>Top Slow Queries</h2>
 <table>
     <tr>
@@ -56,19 +48,12 @@
 <h2>Frequent Queries Chart</h2>
 <canvas id="freqChart"></canvas>
 
-<h2>Execution Time Trend</h2>
-<canvas id="trendChart"></canvas>
-
 <script>
 const slowLabels = {{ slow_labels|safe }};
 const slowData = {{ slow_values|safe }};
 
 const freqLabels = {{ freq_labels|safe }};
 const freqData = {{ freq_values|safe }};
-
-const timelabels = {{ time_labels|safe }};
-const timevalues = {{ time_values|safe }};
-
 
 // Slow Query Chart
 new Chart(document.getElementById('slowChart'), {
@@ -93,18 +78,6 @@ new Chart(document.getElementById('freqChart'), {
         }]
     }
 });
-
-new Chart(document.getElementById('trendChart'), {
-    type: 'line',
-    data: {
-        labels: timelabels,
-        datasets: [{
-            label: 'Execution Time',
-            data: timevalues
-        }]
-    }
-});
-
 </script>
 
 </body>
