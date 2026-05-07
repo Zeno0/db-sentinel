@@ -6,7 +6,7 @@ import random
 
 def analyze_query(query, mean_exec_time, calls):
     print("Mean time:", mean_exec_time)
-    if mean_exec_time >20:
+    if mean_exec_time >30:
          send_telegram_alert(
             f"🚨 Slow Query Detected!\n\nQuery: {query[:100]}\nTime: {mean_exec_time} ms"
         )
